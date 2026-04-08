@@ -1,152 +1,105 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
-import { fetchCourseById, fetchQuiz } from "@/lib/api";
-import { type Course, type QuizQuestion } from "@/lib/mock-data";
-import { QuizComponent } from "@/components/QuizComponent";
-import { LessonSkeleton } from "@/components/LoadingSkeleton";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, CheckCircle2, FileQuestion } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const LessonPage = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
-  const [course, setCourse] = useState<Course | null>(null);
-  const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [markedComplete, setMarkedComplete] = useState(false);
+  const { user, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [lesson, setLesson] = useState<any>(null);
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [completed, setCompleted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
-    if (courseId && lessonId) {
-      Promise.all([fetchCourseById(courseId), fetchQuiz(lessonId)]).then(([c, q]) => {
-        setCourse(c ?? null);
-        setQuiz(q);
-        setLoading(false);
-        setShowQuiz(false);
-        setMarkedComplete(false);
-      });
-    }
-  }, [courseId, lessonId]);
-
-  if (loading) return <AppLayout><LessonSkeleton /></AppLayout>;
-  if (!course) return <AppLayout><div className="text-center py-16 text-muted-foreground">Course not found</div></AppLayout>;
-
-  const lesson = course.lessons.find((l) => l.id === lessonId);
-  if (!lesson) return <AppLayout><div className="text-center py-16 text-muted-foreground">Lesson not found</div></AppLayout>;
-
-  const currentIdx = course.lessons.findIndex((l) => l.id === lessonId);
-  const prevLesson = currentIdx > 0 ? course.lessons[currentIdx - 1] : null;
-  const nextLesson = currentIdx < course.lessons.length - 1 ? course.lessons[currentIdx + 1] : null;
-  const isCompleted = lesson.completed || markedComplete;
-
-  // Simple markdown-like rendering
-  const renderContent = (content: string) => {
-    return content.split("\n").map((line, i) => {
-      if (line.startsWith("## ")) {
-        return <h2 key={i} className="text-xl font-extrabold text-foreground mt-6 mb-3">{line.slice(3)}</h2>;
+    if (!courseId || !lessonId) return;
+    const load = async () => {
+      const [lessonRes, allLessonsRes] = await Promise.all([
+        supabase.from("lessons").select("*").eq("id", lessonId).single(),
+        supabase.from("lessons").select("id, title, order_index").eq("course_id", courseId).order("order_index"),
+      ]);
+      setLesson(lessonRes.data);
+      setLessons(allLessonsRes.data ?? []);
+      if (user) {
+        const { data } = await supabase.from("user_lessons").select("id").eq("user_id", user.id).eq("lesson_id", lessonId).maybeSingle();
+        setCompleted(!!data);
       }
-      if (line.startsWith("- **")) {
-        const match = line.match(/- \*\*(.+?)\*\*: (.+)/);
-        if (match) {
-          return <li key={i} className="ml-4 mb-2 text-muted-foreground"><span className="font-bold text-foreground">{match[1]}</span>: {match[2]}</li>;
+      setLoading(false);
+    };
+    load();
+  }, [courseId, lessonId, user]);
+
+  const currentIndex = lessons.findIndex((l) => l.id === lessonId);
+  const prevLesson = currentIndex > 0 ? lessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
+
+  const handleComplete = async () => {
+    if (!user || !lessonId || !courseId) return;
+    setCompleting(true);
+    try {
+      await supabase.from("user_lessons").upsert({ user_id: user.id, lesson_id: lessonId, completed: true, completed_at: new Date().toISOString() });
+      const { data: allLessons } = await supabase.from("lessons").select("id").eq("course_id", courseId);
+      const { data: completedLessons } = await supabase.from("user_lessons").select("lesson_id").eq("user_id", user.id);
+      const courselesIds = new Set((allLessons ?? []).map((l: any) => l.id));
+      const done = (completedLessons ?? []).filter((ul: any) => courselesIds.has(ul.lesson_id)).length;
+      const progress = allLessons ? (done / allLessons.length) * 100 : 0;
+      await supabase.from("user_courses").update({ progress, last_activity: new Date().toISOString() }).eq("user_id", user.id).eq("course_id", courseId);
+      if (lesson?.xp_reward) {
+        const { data: profileData } = await supabase.from("profiles").select("xp").eq("user_id", user.id).single();
+        if (profileData) {
+          await supabase.from("profiles").update({ xp: profileData.xp + lesson.xp_reward }).eq("user_id", user.id);
+          await refreshProfile();
         }
       }
-      if (line.startsWith("- ")) {
-        return <li key={i} className="ml-4 mb-1 text-muted-foreground">{line.slice(2)}</li>;
-      }
-      if (line.match(/^\d+\./)) {
-        return <li key={i} className="ml-4 mb-1 text-muted-foreground list-decimal">{line.replace(/^\d+\.\s*/, "")}</li>;
-      }
-      if (line.trim() === "") return <br key={i} />;
-      return <p key={i} className="text-muted-foreground mb-2 leading-relaxed">{line}</p>;
-    });
+      setCompleted(true);
+      toast({ title: `+${lesson?.xp_reward || 25} XP earned! 🎉` });
+    } catch {
+      toast({ title: "Error completing lesson", variant: "destructive" });
+    } finally {
+      setCompleting(false);
+    }
   };
+
+  if (loading) return <AppLayout><div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></AppLayout>;
+  if (!lesson) return <AppLayout><div className="text-center py-20 text-muted-foreground">Lesson not found</div></AppLayout>;
 
   return (
     <AppLayout>
-      <div className="space-y-6 max-w-4xl">
-        <div className="flex items-center gap-3">
-          <Link to={`/courses/${courseId}`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-semibold text-sm">
-            <ArrowLeft className="h-4 w-4" /> {course.title}
-          </Link>
-        </div>
-
-        {/* Lesson Progress */}
-        <div className="flex items-center gap-2">
-          {course.lessons.map((l, i) => (
-            <Link
-              key={l.id}
-              to={`/courses/${courseId}/lessons/${l.id}`}
-              className={`h-2 flex-1 rounded-full transition-colors ${
-                l.id === lessonId ? "gradient-primary" : l.completed ? "bg-primary/40" : "bg-muted"
-              }`}
-              title={l.title}
-            />
+      <div className="max-w-3xl mx-auto space-y-6 pb-20 md:pb-0">
+        <Link to={`/courses/${courseId}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> Back to Course</Link>
+        <div className="flex items-center gap-1">
+          {lessons.map((l, i) => (
+            <div key={l.id} className={`h-1 flex-1 rounded-full ${l.id === lessonId ? "gradient-primary" : i <= currentIndex ? "bg-success" : "bg-muted"}`} />
           ))}
         </div>
-
-        {!showQuiz ? (
-          <>
-            <div className="bg-card rounded-2xl shadow-card p-6 md:p-8 border border-border">
-              <div className="flex items-center gap-3 mb-6">
-                {isCompleted && <CheckCircle2 className="h-6 w-6 text-primary" />}
-                <h1 className="text-2xl font-extrabold text-foreground">{lesson.title}</h1>
-              </div>
-              <div className="prose prose-sm max-w-none">
-                {renderContent(lesson.content)}
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              {!isCompleted && (
-                <Button
-                  onClick={() => setMarkedComplete(true)}
-                  className="h-12 rounded-xl font-bold gradient-primary shadow-button hover:translate-y-0.5 hover:shadow-none transition-all duration-150 text-primary-foreground"
-                >
-                  <CheckCircle2 className="h-5 w-5 mr-2" /> Mark as Complete
-                </Button>
-              )}
-              {quiz.length > 0 && (
-                <Button
-                  onClick={() => setShowQuiz(true)}
-                  variant="outline"
-                  className="h-12 rounded-xl font-bold"
-                >
-                  <FileQuestion className="h-5 w-5 mr-2" /> Take Quiz
-                </Button>
-              )}
-            </div>
-
-            <div className="flex justify-between">
-              {prevLesson ? (
-                <Link to={`/courses/${courseId}/lessons/${prevLesson.id}`}>
-                  <Button variant="ghost" className="font-bold">
-                    <ArrowLeft className="h-4 w-4 mr-2" /> {prevLesson.title}
-                  </Button>
-                </Link>
-              ) : <div />}
-              {nextLesson ? (
-                <Link to={`/courses/${courseId}/lessons/${nextLesson.id}`}>
-                  <Button variant="ghost" className="font-bold">
-                    {nextLesson.title} <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
-              ) : (
-                <Link to={`/courses/${courseId}`}>
-                  <Button variant="ghost" className="font-bold text-primary">
-                    Back to Course
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </>
-        ) : (
-          <div className="bg-card rounded-2xl shadow-card p-6 md:p-8 border border-border">
-            <h2 className="text-xl font-extrabold text-foreground mb-6">Quiz: {lesson.title}</h2>
-            <QuizComponent lessonId={lesson.id} questions={quiz} />
+        <div className="bg-card rounded-2xl border border-border shadow-card p-6 md:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <span className="text-xs font-semibold text-muted-foreground">Lesson {currentIndex + 1} of {lessons.length}</span>
+            <span className="text-xs font-bold text-xp">⚡ {lesson.xp_reward} XP</span>
           </div>
-        )}
+          <h1 className="text-2xl font-bold text-foreground mb-6">{lesson.title}</h1>
+          <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed">
+            {lesson.content ? <div dangerouslySetInnerHTML={{ __html: lesson.content.replace(/\n/g, "<br/>") }} /> : <p className="text-muted-foreground">No content available yet.</p>}
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          {prevLesson ? <Button variant="outline" onClick={() => navigate(`/courses/${courseId}/lessons/${prevLesson.id}`)}><ArrowLeft className="h-4 w-4 mr-2" /> Previous</Button> : <div />}
+          {!completed ? (
+            <Button onClick={handleComplete} disabled={completing} className="font-semibold">
+              {completing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="h-4 w-4 mr-2" />} Complete Lesson
+            </Button>
+          ) : (
+            <div className="flex items-center gap-2 text-success font-semibold text-sm"><CheckCircle2 className="h-5 w-5" /> Completed!</div>
+          )}
+          {nextLesson ? <Button onClick={() => navigate(`/courses/${courseId}/lessons/${nextLesson.id}`)}>Next <ArrowRight className="h-4 w-4 ml-2" /></Button> : <Link to={`/courses/${courseId}`}><Button>Back to Course</Button></Link>}
+        </div>
       </div>
     </AppLayout>
   );
