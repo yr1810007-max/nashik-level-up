@@ -39,9 +39,14 @@ const Community = () => {
   const loadProjects = async () => {
     const { data } = await supabase
       .from("projects")
-      .select("*, profiles(display_name, avatar_url)")
+      .select("*")
       .order("created_at", { ascending: false });
-    setProjects(data ?? []);
+    // Fetch author profiles separately
+    const projectsData = data ?? [];
+    const userIds = [...new Set(projectsData.map((p: any) => p.user_id))];
+    const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, avatar_url").in("user_id", userIds.length > 0 ? userIds : ["none"]);
+    const profileMap = new Map((profiles ?? []).map((p: any) => [p.user_id, p]));
+    setProjects(projectsData.map((p: any) => ({ ...p, author_name: profileMap.get(p.user_id)?.display_name, author_avatar: profileMap.get(p.user_id)?.avatar_url })));
     if (user) {
       const { data: likes } = await supabase.from("project_likes").select("project_id").eq("user_id", user.id);
       setLikedIds(new Set((likes ?? []).map((l: any) => l.project_id)));
@@ -140,16 +145,16 @@ const Community = () => {
               <div key={project.id} className="bg-card rounded-2xl border border-border shadow-card p-5 space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
-                    {project.profiles?.avatar_url ? (
-                      <img src={project.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
+                    {project.author_avatar ? (
+                      <img src={project.author_avatar} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-xs font-bold text-muted-foreground">
-                        {(project.profiles?.display_name || "?")[0].toUpperCase()}
+                        {(project.author_name || "?")[0].toUpperCase()}
                       </span>
                     )}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{project.profiles?.display_name || "Anonymous"}</p>
+                    <p className="text-sm font-semibold text-foreground truncate">{project.author_name || "Anonymous"}</p>
                     <p className="text-xs text-muted-foreground">{new Date(project.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
