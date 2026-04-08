@@ -1,177 +1,236 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { fetchCourses, fetchActivities } from "@/lib/api";
-import { type Course, type Activity } from "@/lib/mock-data";
-import { ProgressBar } from "@/components/ProgressBar";
-import { DashboardSkeleton } from "@/components/LoadingSkeleton";
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Flame, Zap, BookOpen, Trophy, Clock, ChevronRight } from "lucide-react";
+import { Flame, Zap, BookOpen, Trophy, Target, ArrowRight, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface CourseWithProgress {
+  id: string;
+  title: string;
+  category: string;
+  difficulty: string;
+  progress: number;
+}
+
+interface Achievement {
+  id: string;
+  name: string;
+  icon: string;
+  description: string | null;
+  unlocked_at: string;
+}
 
 const Dashboard = () => {
-  const { user } = useAuth();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const { profile } = useAuth();
+  const [courses, setCourses] = useState<CourseWithProgress[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    Promise.all([fetchCourses(), fetchActivities()]).then(([c, a]) => {
-      setCourses(c);
-      setActivities(a);
-      setLoading(false);
-    });
-  }, []);
+    if (!user) return;
+    const load = async () => {
+      const [coursesRes, achievementsRes] = await Promise.all([
+        supabase
+          .from("user_courses")
+          .select("progress, course_id, courses(id, title, category, difficulty)")
+          .eq("user_id", user.id),
+        supabase
+          .from("user_achievements")
+          .select("unlocked_at, achievements(id, name, icon, description)")
+          .eq("user_id", user.id)
+          .order("unlocked_at", { ascending: false })
+          .limit(5),
+      ]);
 
-  if (loading || !user) {
-    return <AppLayout><DashboardSkeleton /></AppLayout>;
+      if (coursesRes.data) {
+        setCourses(
+          coursesRes.data.map((uc: any) => ({
+            id: uc.courses?.id ?? "",
+            title: uc.courses?.title ?? "",
+            category: uc.courses?.category ?? "",
+            difficulty: uc.courses?.difficulty ?? "",
+            progress: Number(uc.progress) ?? 0,
+          }))
+        );
+      }
+
+      if (achievementsRes.data) {
+        setAchievements(
+          achievementsRes.data.map((ua: any) => ({
+            id: ua.achievements?.id ?? "",
+            name: ua.achievements?.name ?? "",
+            icon: ua.achievements?.icon ?? "🏆",
+            description: ua.achievements?.description ?? null,
+            unlocked_at: ua.unlocked_at,
+          }))
+        );
+      }
+      setLoading(false);
+    };
+    load();
+  }, [user]);
+
+  if (loading || !profile) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </AppLayout>
+    );
   }
 
-  const enrolledCourses = courses.filter((c) => user.enrolledCourses.includes(c.id));
-  const totalLessons = enrolledCourses.reduce((a, c) => a + c.lessons.length, 0);
-  const completedLessons = enrolledCourses.reduce((a, c) => a + c.lessons.filter((l) => l.completed).length, 0);
-
-  const activityIcons: Record<string, React.ReactNode> = {
-    lesson_completed: <BookOpen className="h-4 w-4 text-primary" />,
-    quiz_passed: <Trophy className="h-4 w-4 text-accent" />,
-    badge_earned: <span className="text-sm">🏅</span>,
-    course_started: <BookOpen className="h-4 w-4 text-secondary" />,
-  };
+  const levelProgress = ((profile.xp % 1000) / 1000) * 100;
 
   return (
     <AppLayout>
-      <div className="space-y-8 max-w-6xl">
+      <div className="space-y-8 pb-20 md:pb-0">
         {/* Welcome */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-foreground">
-              Hey, {user.name}! 👋
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+              Welcome back, {profile.display_name || "Learner"}! 👋
             </h1>
-            <p className="text-muted-foreground mt-1">Keep up the great work on your learning journey!</p>
+            <p className="text-muted-foreground mt-1">Ready to level up today?</p>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent/15 text-accent-foreground font-bold">
-            <Flame className="h-5 w-5 animate-streak-fire text-accent" />
-            <span>{user.streak} day streak!</span>
-          </div>
+          {profile.streak > 0 && (
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent/15 text-accent-foreground font-bold text-sm">
+              <Flame className="h-5 w-5 animate-streak-fire text-accent" />
+              {profile.streak} day streak!
+            </div>
+          )}
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-card rounded-2xl shadow-card p-5 border border-border">
-            <div className="flex items-center gap-3 mb-2">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-card rounded-2xl p-5 border border-border shadow-card">
+            <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl gradient-xp flex items-center justify-center">
                 <Zap className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-sm font-semibold text-muted-foreground">Total XP</span>
+              <span className="text-xs font-semibold text-muted-foreground">Total XP</span>
             </div>
-            <p className="text-3xl font-extrabold text-foreground">{user.points.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-foreground">{profile.xp.toLocaleString()}</p>
           </div>
-          <div className="bg-card rounded-2xl shadow-card p-5 border border-border">
-            <div className="flex items-center gap-3 mb-2">
+          <div className="bg-card rounded-2xl p-5 border border-border shadow-card">
+            <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+                <Target className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span className="text-xs font-semibold text-muted-foreground">Level</span>
+            </div>
+            <p className="text-2xl font-bold text-foreground">{profile.level}</p>
+            <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
+              <div className="h-full gradient-primary rounded-full transition-all" style={{ width: `${levelProgress}%` }} />
+            </div>
+          </div>
+          <div className="bg-card rounded-2xl p-5 border border-border shadow-card">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl gradient-info flex items-center justify-center">
                 <BookOpen className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-sm font-semibold text-muted-foreground">Courses</span>
+              <span className="text-xs font-semibold text-muted-foreground">Courses</span>
             </div>
-            <p className="text-3xl font-extrabold text-foreground">{enrolledCourses.length}</p>
+            <p className="text-2xl font-bold text-foreground">{courses.length}</p>
           </div>
-          <div className="bg-card rounded-2xl shadow-card p-5 border border-border">
-            <div className="flex items-center gap-3 mb-2">
+          <div className="bg-card rounded-2xl p-5 border border-border shadow-card">
+            <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl gradient-accent flex items-center justify-center">
                 <Trophy className="h-5 w-5 text-accent-foreground" />
               </div>
-              <span className="text-sm font-semibold text-muted-foreground">Badges</span>
+              <span className="text-xs font-semibold text-muted-foreground">Achievements</span>
             </div>
-            <p className="text-3xl font-extrabold text-foreground">{user.badges.length}</p>
+            <p className="text-2xl font-bold text-foreground">{achievements.length}</p>
           </div>
         </div>
 
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Link to="/courses">
+            <Button variant="outline" className="w-full h-12 justify-between font-semibold">
+              <span className="flex items-center gap-2"><BookOpen className="h-4 w-4" /> Browse Courses</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Link to="/community">
+            <Button variant="outline" className="w-full h-12 justify-between font-semibold">
+              <span className="flex items-center gap-2"><Target className="h-4 w-4" /> Community Projects</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Link to="/leaderboard">
+            <Button variant="outline" className="w-full h-12 justify-between font-semibold">
+              <span className="flex items-center gap-2"><Trophy className="h-4 w-4" /> Leaderboard</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Course Progress */}
-          <div className="lg:col-span-2 bg-card rounded-2xl shadow-card p-6 border border-border">
+          {/* Enrolled Courses */}
+          <div className="lg:col-span-2 bg-card rounded-2xl p-6 border border-border shadow-card">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-extrabold text-foreground">My Courses</h2>
-              <Link to="/courses" className="text-sm text-primary font-bold hover:underline flex items-center gap-1">
-                View all <ChevronRight className="h-4 w-4" />
-              </Link>
+              <h2 className="text-lg font-bold text-foreground">My Courses</h2>
+              <Link to="/courses" className="text-sm text-primary font-semibold hover:underline">View all →</Link>
             </div>
-            {enrolledCourses.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                <p className="font-semibold">No courses yet</p>
-                <Link to="/courses" className="text-primary font-bold text-sm hover:underline mt-1 block">
-                  Browse courses →
+            {courses.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">No courses yet</p>
+                <Link to="/courses" className="text-primary text-sm font-semibold hover:underline mt-1 block">
+                  Start learning →
                 </Link>
               </div>
             ) : (
-              <div className="space-y-5">
-                <ProgressBar value={completedLessons} max={totalLessons} label={`${completedLessons}/${totalLessons} lessons completed`} />
-                {enrolledCourses.map((course) => {
-                  const done = course.lessons.filter((l) => l.completed).length;
-                  const pct = course.lessons.length > 0 ? (done / course.lessons.length) * 100 : 0;
-                  return (
-                    <Link key={course.id} to={`/courses/${course.id}`} className="block group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
-                          <BookOpen className="h-5 w-5 text-primary-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{course.title}</p>
-                          <ProgressBar value={pct} size="sm" showPercentage={false} />
-                        </div>
-                        <span className="text-xs font-bold text-primary">{Math.round(pct)}%</span>
+              <div className="space-y-4">
+                {courses.map((course) => (
+                  <Link key={course.id} to={`/courses/${course.id}`} className="block group">
+                    <div className="flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors">
+                      <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="h-5 w-5 text-primary-foreground" />
                       </div>
-                    </Link>
-                  );
-                })}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">{course.title}</p>
+                        <p className="text-xs text-muted-foreground">{course.category} · {course.difficulty}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full gradient-primary rounded-full transition-all" style={{ width: `${course.progress}%` }} />
+                        </div>
+                        <span className="text-xs font-bold text-primary w-8 text-right">{Math.round(course.progress)}%</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Recent Activity */}
-          <div className="bg-card rounded-2xl shadow-card p-6 border border-border">
-            <h2 className="text-lg font-extrabold text-foreground mb-5">Recent Activity</h2>
-            {activities.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Clock className="h-10 w-10 mx-auto mb-3 opacity-40" />
-                <p className="font-semibold">No activity yet</p>
+          {/* Achievements */}
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-card">
+            <h2 className="text-lg font-bold text-foreground mb-5">Recent Achievements</h2>
+            {achievements.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Trophy className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">No achievements yet</p>
+                <p className="text-xs mt-1">Complete courses and challenges to earn badges!</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {activities.slice(0, 5).map((act) => (
-                  <div key={act.id} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                      {activityIcons[act.type]}
-                    </div>
+              <div className="space-y-3">
+                {achievements.map((a) => (
+                  <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
+                    <span className="text-2xl">{a.icon}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">{act.description}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {new Date(act.timestamp).toLocaleDateString()}
-                        {act.points && <span className="ml-2 text-primary font-bold">+{act.points} XP</span>}
-                      </p>
+                      <p className="font-semibold text-sm text-foreground">{a.name}</p>
+                      {a.description && <p className="text-xs text-muted-foreground truncate">{a.description}</p>}
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Badges */}
-        <div className="bg-card rounded-2xl shadow-card p-6 border border-border">
-          <h2 className="text-lg font-extrabold text-foreground mb-5">My Badges</h2>
-          <div className="flex flex-wrap gap-4">
-            {user.badges.map((badge) => (
-              <div
-                key={badge.id}
-                className="flex items-center gap-3 bg-muted/50 rounded-xl px-4 py-3 border border-border"
-              >
-                <span className="text-2xl">{badge.icon}</span>
-                <div>
-                  <p className="font-bold text-sm text-foreground">{badge.name}</p>
-                  <p className="text-xs text-muted-foreground">{badge.description}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

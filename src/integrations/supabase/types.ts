@@ -14,7 +14,455 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          created_at: string
+          criteria: Json | null
+          description: string | null
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          criteria?: Json | null
+          description?: string | null
+          icon?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          criteria?: Json | null
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      challenges: {
+        Row: {
+          active_from: string | null
+          active_until: string | null
+          challenge_type: string
+          created_at: string
+          description: string | null
+          difficulty: string
+          id: string
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          active_from?: string | null
+          active_until?: string | null
+          challenge_type?: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          id?: string
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          active_from?: string | null
+          active_until?: string | null
+          challenge_type?: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          id?: string
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          difficulty: string
+          id: string
+          image_url: string | null
+          title: string
+          updated_at: string
+          xp_reward: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          id?: string
+          image_url?: string | null
+          title: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          id?: string
+          image_url?: string | null
+          title?: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      lessons: {
+        Row: {
+          content: string | null
+          course_id: string
+          created_at: string
+          id: string
+          image_url: string | null
+          order_index: number
+          title: string
+          updated_at: string
+          xp_reward: number
+        }
+        Insert: {
+          content?: string | null
+          course_id: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          order_index?: number
+          title: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Update: {
+          content?: string | null
+          course_id?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          order_index?: number
+          title?: string
+          updated_at?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          last_activity_date: string | null
+          level: number
+          streak: number
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_activity_date?: string | null
+          level?: number
+          streak?: number
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_activity_date?: string | null
+          level?: number
+          streak?: number
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      project_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_likes: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_likes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          code_url: string | null
+          created_at: string
+          description: string | null
+          difficulty: string | null
+          id: string
+          likes_count: number
+          media_url: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          code_url?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          likes_count?: number
+          media_url?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          code_url?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          likes_count?: number
+          media_url?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed: boolean
+          completed_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_courses: {
+        Row: {
+          completed: boolean
+          course_id: string
+          enrolled_at: string
+          id: string
+          last_activity: string
+          progress: number
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          course_id: string
+          enrolled_at?: string
+          id?: string
+          last_activity?: string
+          progress?: number
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          course_id?: string
+          enrolled_at?: string
+          id?: string
+          last_activity?: string
+          progress?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_lessons: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lessons_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

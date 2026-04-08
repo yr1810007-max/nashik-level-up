@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { fetchLeaderboard } from "@/lib/api";
-import { type LeaderboardEntry } from "@/lib/mock-data";
-import { LeaderboardTable } from "@/components/LeaderboardTable";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { DashboardSkeleton } from "@/components/LoadingSkeleton";
-import { Trophy } from "lucide-react";
+import { Trophy, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface LeaderboardEntry { user_id: string; display_name: string | null; avatar_url: string | null; xp: number; level: number; }
 
 const Leaderboard = () => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -13,26 +13,41 @@ const Leaderboard = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchLeaderboard().then((e) => { setEntries(e); setLoading(false); });
+    supabase.from("profiles").select("user_id, display_name, avatar_url, xp, level").order("xp", { ascending: false }).limit(50).then(({ data }) => {
+      setEntries(data ?? []);
+      setLoading(false);
+    });
   }, []);
+
+  const rankEmoji = (i: number) => i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}`;
 
   return (
     <AppLayout>
-      <div className="space-y-6 max-w-2xl">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl gradient-accent flex items-center justify-center">
-            <Trophy className="h-6 w-6 text-accent-foreground" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-extrabold text-foreground">Leaderboard</h1>
-            <p className="text-muted-foreground text-sm">Top learners this month</p>
-          </div>
-        </div>
-
+      <div className="space-y-6 max-w-2xl mx-auto pb-20 md:pb-0">
+        <div className="text-center"><h1 className="text-2xl md:text-3xl font-bold text-foreground">Leaderboard</h1><p className="text-muted-foreground mt-1">Top learners ranked by XP</p></div>
         {loading ? (
-          <DashboardSkeleton />
+          <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : entries.length === 0 ? (
+          <div className="text-center py-20 text-muted-foreground"><Trophy className="h-12 w-12 mx-auto mb-3 opacity-30" /><p className="font-medium">No learners yet</p></div>
         ) : (
-          <LeaderboardTable entries={entries} currentUserId={user?.id} />
+          <div className="bg-card rounded-2xl border border-border shadow-card divide-y divide-border">
+            {entries.map((entry, i) => {
+              const isCurrentUser = entry.user_id === user?.id;
+              return (
+                <div key={entry.user_id} className={cn("flex items-center gap-4 px-5 py-4", isCurrentUser && "bg-primary/5", i < 3 && "bg-accent/5")}>
+                  <span className={cn("w-8 text-center font-bold", i < 3 ? "text-lg" : "text-sm text-muted-foreground")}>{rankEmoji(i)}</span>
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {entry.avatar_url ? <img src={entry.avatar_url} alt="" className="w-full h-full object-cover" /> : <span className="text-sm font-bold text-muted-foreground">{(entry.display_name || "?")[0].toUpperCase()}</span>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn("font-semibold text-sm truncate", isCurrentUser ? "text-primary" : "text-foreground")}>{entry.display_name || "Anonymous"}{isCurrentUser && <span className="text-xs ml-2 text-primary">(You)</span>}</p>
+                    <p className="text-xs text-muted-foreground">Level {entry.level}</p>
+                  </div>
+                  <span className="font-bold text-sm text-xp">⚡ {entry.xp.toLocaleString()}</span>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </AppLayout>
