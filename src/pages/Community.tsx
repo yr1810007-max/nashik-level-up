@@ -20,7 +20,8 @@ interface Project {
   code_url: string | null;
   likes_count: number;
   created_at: string;
-  profiles?: { display_name: string | null; avatar_url: string | null };
+  author_name?: string | null;
+  author_avatar?: string | null;
 }
 
 const Community = () => {
