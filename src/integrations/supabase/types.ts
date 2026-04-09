@@ -77,6 +77,194 @@ export type Database = {
         }
         Relationships: []
       }
+      confidence_questions: {
+        Row: {
+          correct_answer: number
+          course_id: string
+          created_at: string
+          id: string
+          options: Json
+          order_index: number
+          question: string
+        }
+        Insert: {
+          correct_answer?: number
+          course_id: string
+          created_at?: string
+          id?: string
+          options?: Json
+          order_index?: number
+          question: string
+        }
+        Update: {
+          correct_answer?: number
+          course_id?: string
+          created_at?: string
+          id?: string
+          options?: Json
+          order_index?: number
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "confidence_questions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      confidence_scores: {
+        Row: {
+          answers_after: Json | null
+          answers_before: Json | null
+          course_id: string
+          created_at: string
+          id: string
+          score_after: number | null
+          score_before: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answers_after?: Json | null
+          answers_before?: Json | null
+          course_id: string
+          created_at?: string
+          id?: string
+          score_after?: number | null
+          score_before?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answers_after?: Json | null
+          answers_before?: Json | null
+          course_id?: string
+          created_at?: string
+          id?: string
+          score_after?: number | null
+          score_before?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "confidence_scores_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_components: {
+        Row: {
+          amazon_link: string | null
+          course_id: string
+          created_at: string
+          flipkart_link: string | null
+          id: string
+          image_url: string | null
+          name: string
+          other_link: string | null
+          price_inr: number
+          purpose: string | null
+          quantity: number
+        }
+        Insert: {
+          amazon_link?: string | null
+          course_id: string
+          created_at?: string
+          flipkart_link?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          other_link?: string | null
+          price_inr?: number
+          purpose?: string | null
+          quantity?: number
+        }
+        Update: {
+          amazon_link?: string | null
+          course_id?: string
+          created_at?: string
+          flipkart_link?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          other_link?: string | null
+          price_inr?: number
+          purpose?: string | null
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_components_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_steps: {
+        Row: {
+          code_snippet: string | null
+          created_at: string
+          description: string
+          expected_output: string | null
+          id: string
+          image_url: string | null
+          lesson_id: string
+          order_index: number
+          step_type: string
+          title: string
+          video_url: string | null
+          why_important: string | null
+          xp_reward: number
+        }
+        Insert: {
+          code_snippet?: string | null
+          created_at?: string
+          description: string
+          expected_output?: string | null
+          id?: string
+          image_url?: string | null
+          lesson_id: string
+          order_index?: number
+          step_type?: string
+          title: string
+          video_url?: string | null
+          why_important?: string | null
+          xp_reward?: number
+        }
+        Update: {
+          code_snippet?: string | null
+          created_at?: string
+          description?: string
+          expected_output?: string | null
+          id?: string
+          image_url?: string | null
+          lesson_id?: string
+          order_index?: number
+          step_type?: string
+          title?: string
+          video_url?: string | null
+          why_important?: string | null
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_steps_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           category: string
@@ -332,6 +520,44 @@ export type Database = {
         }
         Relationships: []
       }
+      step_quizzes: {
+        Row: {
+          correct_answer: number
+          created_at: string
+          explanation: string | null
+          id: string
+          options: Json
+          question: string
+          step_id: string
+        }
+        Insert: {
+          correct_answer?: number
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          options?: Json
+          question: string
+          step_id: string
+        }
+        Update: {
+          correct_answer?: number
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          options?: Json
+          question?: string
+          step_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "step_quizzes_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "course_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -459,6 +685,79 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_quiz_results: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          quiz_id: string
+          selected_answer: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          quiz_id: string
+          selected_answer: number
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          quiz_id?: string
+          selected_answer?: number
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_quiz_results_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "step_quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_step_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          step_id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          step_id: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          step_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_step_progress_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "course_steps"
             referencedColumns: ["id"]
           },
         ]
