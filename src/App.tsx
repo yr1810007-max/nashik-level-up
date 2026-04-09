@@ -15,6 +15,9 @@ import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
 import LessonPage from "./pages/LessonPage";
+import StepDetailPage from "./pages/StepDetailPage";
+import ConfidenceMeter from "./pages/ConfidenceMeter";
+import ComponentsPage from "./pages/ComponentsPage";
 import Leaderboard from "./pages/Leaderboard";
 import Community from "./pages/Community";
 import Profile from "./pages/Profile";
@@ -40,6 +43,9 @@ const App = () => (
               <Route path="/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
               <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
               <Route path="/courses/:courseId/lessons/:lessonId" element={<ProtectedRoute><LessonPage /></ProtectedRoute>} />
+              <Route path="/courses/:courseId/lessons/:lessonId/steps/:stepId" element={<ProtectedRoute><StepDetailPage /></ProtectedRoute>} />
+              <Route path="/courses/:courseId/confidence/:phase" element={<ProtectedRoute><ConfidenceMeter /></ProtectedRoute>} />
+              <Route path="/courses/:courseId/components" element={<ProtectedRoute><ComponentsPage /></ProtectedRoute>} />
               <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
               <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
