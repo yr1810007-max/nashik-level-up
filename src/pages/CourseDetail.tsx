@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, CheckCircle2, Lock, ArrowLeft, Loader2, Brain, ShoppingCart, BarChart3, FlaskConical } from "lucide-react";
+import { BookOpen, CheckCircle2, Lock, ArrowLeft, Loader2, Brain, ShoppingCart, BarChart3, FlaskConical, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import iotBanner from "@/assets/course-iot-banner.jpg";
@@ -159,6 +159,17 @@ const CourseDetail = () => {
                 <div className="text-left">
                   <p className="text-sm">Start Simulation</p>
                   <p className="text-xs text-muted-foreground font-normal">Practice with virtual circuit</p>
+                </div>
+              </Button>
+            </Link>
+
+            {/* Learning Workspace */}
+            <Link to={`/learning/${courseId}`}>
+              <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold border-primary/50 hover:bg-primary/5">
+                <GraduationCap className="h-5 w-5 text-primary" />
+                <div className="text-left">
+                  <p className="text-sm">Start Learning</p>
+                  <p className="text-xs text-muted-foreground font-normal">Interactive step-by-step lab</p>
                 </div>
               </Button>
             </Link>

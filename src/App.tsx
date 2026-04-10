@@ -22,6 +22,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import SimulationPage from "./pages/SimulationPage";
+import LearningWorkspace from "./pages/LearningWorkspace";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/courses/:courseId/confidence/:phase" element={<ProtectedRoute><ConfidenceMeter /></ProtectedRoute>} />
               <Route path="/courses/:courseId/components" element={<ProtectedRoute><ComponentsPage /></ProtectedRoute>} />
               <Route path="/courses/:courseId/simulation" element={<ProtectedRoute><SimulationPage /></ProtectedRoute>} />
+              <Route path="/learning/:courseId" element={<ProtectedRoute><LearningWorkspace /></ProtectedRoute>} />
               <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
               <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
