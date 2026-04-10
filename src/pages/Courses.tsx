@@ -9,6 +9,19 @@ import { BookOpen, Search, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+import iotBanner from "@/assets/course-iot-banner.jpg";
+import dht11Banner from "@/assets/course-dht11-banner.jpg";
+import irrigationBanner from "@/assets/course-irrigation-banner.jpg";
+import cropBanner from "@/assets/course-crop-banner.jpg";
+
+function getCourseBanner(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("led")) return iotBanner;
+  if (t.includes("dht")) return dht11Banner;
+  if (t.includes("irrigation")) return irrigationBanner;
+  return cropBanner;
+}
+
 interface Course {
   id: string;
   title: string;
@@ -104,8 +117,8 @@ const Courses = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((course) => (
               <div key={course.id} className="bg-card rounded-2xl border border-border shadow-card hover:shadow-card-hover transition-all group overflow-hidden">
-                <div className="h-36 gradient-hero flex items-center justify-center">
-                  <BookOpen className="h-12 w-12 text-primary-foreground/50" />
+                <div className="h-36 overflow-hidden">
+                  <img src={getCourseBanner(course.title)} alt={course.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
                 </div>
                 <div className="p-5 space-y-3">
                   <div className="flex items-center gap-2">
