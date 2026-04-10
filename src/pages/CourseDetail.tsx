@@ -5,8 +5,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, CheckCircle2, Lock, ArrowLeft, Loader2, Brain, ShoppingCart, BarChart3 } from "lucide-react";
+import { BookOpen, CheckCircle2, Lock, ArrowLeft, Loader2, Brain, ShoppingCart, BarChart3, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import iotBanner from "@/assets/course-iot-banner.jpg";
+import dht11Banner from "@/assets/course-dht11-banner.jpg";
+import irrigationBanner from "@/assets/course-irrigation-banner.jpg";
+import cropBanner from "@/assets/course-crop-banner.jpg";
+
+function getCourseBanner(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("led")) return iotBanner;
+  if (t.includes("dht")) return dht11Banner;
+  if (t.includes("irrigation")) return irrigationBanner;
+  return cropBanner;
+}
 
 interface Lesson { id: string; title: string; order_index: number; xp_reward: number; }
 
@@ -68,7 +81,10 @@ const CourseDetail = () => {
 
         {/* Course Header */}
         <div className="bg-card rounded-2xl border border-border shadow-card overflow-hidden">
-          <div className="h-48 gradient-hero flex items-center justify-center"><BookOpen className="h-16 w-16 text-primary-foreground/50" /></div>
+          <div className="h-48 relative overflow-hidden">
+            <img src={getCourseBanner(course.title)} alt={course.title} className="w-full h-full object-cover" loading="lazy" width={1280} height={512} />
+            <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+          </div>
           <div className="p-6 space-y-4">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="secondary">{course.category}</Badge>
@@ -135,6 +151,17 @@ const CourseDetail = () => {
                 </Button>
               </Link>
             )}
+
+            {/* Simulation */}
+            <Link to={`/courses/${courseId}/simulation`}>
+              <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold border-success/50 hover:bg-success/5">
+                <FlaskConical className="h-5 w-5 text-success" />
+                <div className="text-left">
+                  <p className="text-sm">Start Simulation</p>
+                  <p className="text-xs text-muted-foreground font-normal">Practice with virtual circuit</p>
+                </div>
+              </Button>
+            </Link>
           </div>
         )}
 
