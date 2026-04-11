@@ -20,6 +20,7 @@ import ConfidenceMeter from "./pages/ConfidenceMeter";
 import ComponentsPage from "./pages/ComponentsPage";
 import Leaderboard from "./pages/Leaderboard";
 import Community from "./pages/Community";
+import ComponentLibrary from "./pages/ComponentLibrary";
 import Profile from "./pages/Profile";
 import SimulationPage from "./pages/SimulationPage";
 import LearningWorkspace from "./pages/LearningWorkspace";
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/learning/:courseId" element={<ProtectedRoute><LearningWorkspace /></ProtectedRoute>} />
               <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
               <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+              <Route path="/components" element={<ProtectedRoute><ComponentLibrary /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
