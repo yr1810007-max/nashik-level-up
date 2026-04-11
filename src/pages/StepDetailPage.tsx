@@ -252,8 +252,23 @@ const StepDetailPage = () => {
 
           <h1 className="text-2xl font-bold text-foreground">{step.title}</h1>
 
-          <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed whitespace-pre-wrap">
-            {step.description}
+          <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed space-y-3">
+            {step.description.split('\n').map((para, i) => {
+              const trimmed = para.trim();
+              if (!trimmed) return null;
+              if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+                return (
+                  <div key={i} className="flex items-start gap-2 text-sm">
+                    <span className="text-primary mt-0.5 font-bold">•</span>
+                    <span>{trimmed.replace(/^[-•]\s*/, '')}</span>
+                  </div>
+                );
+              }
+              if (trimmed.endsWith(':')) {
+                return <h3 key={i} className="text-sm font-bold text-foreground mt-2">{trimmed}</h3>;
+              }
+              return <p key={i} className="text-sm">{trimmed}</p>;
+            })}
           </div>
 
           {step.why_important && (
@@ -271,9 +286,19 @@ const StepDetailPage = () => {
           )}
 
           {step.code_snippet && (
-            <div className="bg-foreground/5 rounded-xl p-4 overflow-x-auto">
-              <p className="text-xs font-bold text-muted-foreground mb-2 flex items-center gap-1"><Code className="h-3 w-3" /> Code</p>
-              <pre className="text-sm font-mono text-foreground whitespace-pre-wrap">{step.code_snippet}</pre>
+            <div className="bg-foreground/5 rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2 bg-foreground/10 border-b border-border">
+                <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Code className="h-3.5 w-3.5 text-primary" /> Arduino Code
+                </p>
+                <button
+                  onClick={() => { navigator.clipboard.writeText(step.code_snippet || ""); }}
+                  className="text-[10px] font-semibold text-muted-foreground hover:text-foreground bg-background/50 px-2 py-1 rounded-md transition-colors"
+                >
+                  📋 Copy
+                </button>
+              </div>
+              <pre className="p-4 text-sm font-mono text-foreground overflow-x-auto leading-relaxed whitespace-pre">{step.code_snippet}</pre>
             </div>
           )}
 
