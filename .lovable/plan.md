@@ -1,43 +1,30 @@
 
 
-## Plan: Integrate Circuit Lab Simulation into SkillQuest IoT
+## Plan: Add Floating Contact/Experts Panel
 
 ### Summary
-Replace the current basic `SimulationPage.tsx` with a full interactive circuit lab (based on the uploaded HTML) that lets users drag-and-drop components, wire them together, and run a real circuit simulation. The "Start Simulation" button in each course will open this new lab, pre-loaded with a demo circuit relevant to that course.
+Create a new `FloatingContactButton` component that renders a fixed bottom-right button with a tooltip. Clicking it opens a slide-up panel showing expert contact cards with LinkedIn links. Add it once in `App.tsx` (inside providers, outside Routes) so it appears on all pages.
 
-### What changes
+### Files to create
 
-**1. Rewrite `SimulationPage.tsx`**
-- Convert the uploaded HTML/CSS/JS circuit lab into a React component
-- Port all component definitions (Battery, Ground, Resistor, Capacitor, LED red/green/blue, Buzzer, Switch, Button, Arduino Uno, 555 Timer) as a TypeScript data structure
-- Implement the SVG-based canvas with dot-grid background using React refs and direct DOM manipulation (the simulation logic relies on imperative SVG updates for performance)
-- Port toolbar (Select, Wire, Delete, Clear, Demo Circuit, Run/Stop) as React buttons
-- Port the left sidebar component palette (Power, Passive, Output, Input, IC categories)
-- Port the right properties panel showing selected component details with editable inputs
-- Port the simulation engine (union-find circuit solver, DFS path finding, current/voltage calculation)
-- Port drag-and-drop, wire drawing, and component placement logic via SVG mouse event handlers
-- Add course-specific demo circuits: each course loads a pre-built circuit (e.g., LED course → battery + resistor + LED + ground; DHT11 → Arduino + sensor layout)
-- Keep the existing header with "Back to Course" link and course title
-- Add a status bar at the bottom showing tool state, component/wire count, and simulation status
-- Style using Tailwind classes for the outer shell; inline styles for SVG internals (matching the uploaded design)
+**`src/components/FloatingContactButton.tsx`**
+- Fixed circular button at bottom-right (`fixed bottom-6 right-6 z-50`) with a `Headset` or `MessageCircleQuestion` icon
+- Tooltip on hover: "Contact / Get Help"
+- On click, opens a dialog/sheet panel with smooth animation
+- Panel contains a scrollable list of expert cards from a static `experts` array
+- Each card: avatar fallback with initials, name, role, short bio, and a "View Profile" button linking to LinkedIn (opens new tab)
+- Uses existing UI primitives: `Dialog`, `Avatar`, `Button`, `Tooltip`
+- Glassmorphism styling via `backdrop-blur` + soft shadow
+- Responsive: full-width on mobile, max-w-md on desktop
+- Data structured as a typed array so more experts can be added trivially later
+- Position adjusted on mobile to avoid overlapping the bottom nav bar (`bottom-20 md:bottom-6`)
 
-**2. Course-specific demo presets**
-- LED Blinking → Battery + Switch + Resistor + Red LED + Ground (pre-wired)
-- DHT11 → Arduino Uno + wired sensor representation
-- Irrigation → Arduino + Switch (relay) + LED (pump indicator)
-- Crop Monitoring → Arduino + multiple LED indicators for sensors
+### Files to edit
 
-**3. No changes to existing pages**
-- `CourseDetail.tsx` already has a "Start Simulation" button linking to `/courses/:courseId/simulation` — no modification needed
-- `App.tsx` routing already configured — no modification needed
+**`src/App.tsx`**
+- Import `FloatingContactButton`
+- Add `<FloatingContactButton />` inside `<BrowserRouter>` but outside `<Routes>`, so it renders globally on every page
 
-### Technical details
-
-The uploaded HTML is a self-contained ~550-line circuit simulator with:
-- **Component definitions** (`CDEFS`): 12 component types with SVG draw functions, pin definitions, and default properties
-- **Simulation engine**: Union-Find for net connectivity + DFS to trace current paths from battery through components to ground, calculating current (I = V/R) and component states (LED lit, buzzer active)
-- **Interaction**: Three tools (Select/drag, Wire drawing with manhattan routing, Delete) + component placement from sidebar
-- **Properties panel**: Live-editable values (voltage, resistance, capacitance) + switch/button toggle
-
-The React port will use `useRef` for the SVG element, `useState` for component/wire arrays and tool state, and `useCallback` for event handlers. The simulation engine functions will be extracted as pure utility functions.
+### No other files modified
+All existing pages, layouts, and components remain untouched.
 
