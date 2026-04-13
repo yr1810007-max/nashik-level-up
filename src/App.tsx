@@ -25,6 +25,7 @@ import Profile from "./pages/Profile";
 import SimulationPage from "./pages/SimulationPage";
 import LearningWorkspace from "./pages/LearningWorkspace";
 import NotFound from "./pages/NotFound";
+import FloatingContactButton from "./components/FloatingContactButton";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <FloatingContactButton />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
