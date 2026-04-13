@@ -89,10 +89,11 @@ const FloatingContactButton = () => {
                     variant="outline"
                     size="sm"
                     className="mt-2 gap-1.5"
-                    onClick={() => window.open(expert.linkedin, "_blank")}
+                    onClick={() => window.open(expert.linkedin, "_blank", "noopener,noreferrer")}
                   >
                     <Linkedin className="h-3.5 w-3.5" />
                     View Profile
+                    <ExternalLink className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
