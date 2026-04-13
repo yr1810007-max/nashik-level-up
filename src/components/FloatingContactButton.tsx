@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageCircleQuestion, Linkedin, X } from "lucide-react";
+import { MessageCircleQuestion, Linkedin, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
