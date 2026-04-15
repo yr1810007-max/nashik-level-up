@@ -26,6 +26,7 @@ import SimulationPage from "./pages/SimulationPage";
 import LearningWorkspace from "./pages/LearningWorkspace";
 import NotFound from "./pages/NotFound";
 import FloatingContactButton from "./components/FloatingContactButton";
+import FloatingAIChat from "./components/FloatingAIChat";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <FloatingContactButton />
+            <FloatingAIChat />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
