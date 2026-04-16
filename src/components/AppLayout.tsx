@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, Users, Trophy, User, Sun, Moon, LogOut, Menu, X, CircuitBoard } from "lucide-react";
+import { Home, BookOpen, Users, Trophy, User, Sun, Moon, LogOut, Menu, X, CircuitBoard, Store } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState } from "react";
@@ -12,6 +12,7 @@ const navItems = [
   { to: "/components", label: "Components", icon: CircuitBoard },
   { to: "/community", label: "Community", icon: Users },
   { to: "/leaderboard", label: "Board", icon: Trophy },
+  { to: "/local-shops", label: "Shops", icon: Store },
   { to: "/profile", label: "Profile", icon: User },
 ];
 
