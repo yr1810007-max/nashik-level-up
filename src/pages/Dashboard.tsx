@@ -83,7 +83,8 @@ const Dashboard = () => {
     );
   }
 
-  const levelProgress = ((profile.xp % 1000) / 1000) * 100;
+  const computedLevel = Math.floor(profile.xp / 100) + 1;
+  const levelProgress = ((profile.xp % 100) / 100) * 100;
 
   return (
     <AppLayout>
@@ -122,7 +123,7 @@ const Dashboard = () => {
               </div>
               <span className="text-xs font-semibold text-muted-foreground">Level</span>
             </div>
-            <p className="text-2xl font-bold text-foreground">{profile.level}</p>
+            <p className="text-2xl font-bold text-foreground">{computedLevel}</p>
             <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
               <div className="h-full gradient-primary rounded-full transition-all" style={{ width: `${levelProgress}%` }} />
             </div>
