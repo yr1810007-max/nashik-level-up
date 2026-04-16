@@ -133,7 +133,7 @@ const FloatingAIChat = () => {
           <TooltipTrigger asChild>
             <button
               onClick={() => setOpen(true)}
-              className="fixed bottom-20 right-6 md:bottom-20 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/30 hover:scale-110 hover:shadow-xl transition-all duration-300 flex items-center justify-center animate-pulse hover:animate-none"
+              className="fixed bottom-20 right-6 md:bottom-6 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/30 hover:scale-105 hover:shadow-xl transition-all duration-200 flex items-center justify-center"
               aria-label="Ask AI"
             >
               <Sparkles className="h-6 w-6" />
