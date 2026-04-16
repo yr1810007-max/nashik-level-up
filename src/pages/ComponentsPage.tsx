@@ -4,6 +4,28 @@ import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ExternalLink, IndianRupee, Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import componentEsp32 from "@/assets/component-esp32.png";
+import componentDht11 from "@/assets/component-dht11.png";
+import componentLed from "@/assets/component-led.png";
+import componentResistor from "@/assets/component-resistor.png";
+
+const componentImages: Record<string, string> = {
+  esp32: componentEsp32,
+  esp: componentEsp32,
+  dht11: componentDht11,
+  dht: componentDht11,
+  led: componentLed,
+  resistor: componentResistor,
+  "220": componentResistor,
+};
+
+function getComponentImage(name: string): string | null {
+  const lower = name.toLowerCase();
+  for (const [key, img] of Object.entries(componentImages)) {
+    if (lower.includes(key)) return img;
+  }
+  return null;
+}
 
 interface Component {
   id: string;
