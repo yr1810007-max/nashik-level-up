@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { AppLayout } from "@/components/AppLayout";
+import { formatContent } from "@/lib/format-content";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -254,14 +255,14 @@ const StepDetailPage = () => {
           <h1 className="text-2xl font-bold text-foreground">{step.title}</h1>
 
           <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed space-y-3 prose-headings:text-foreground prose-strong:text-foreground prose-li:text-foreground/90">
-            <ReactMarkdown>{step.description}</ReactMarkdown>
+            <ReactMarkdown>{formatContent(step.description)}</ReactMarkdown>
           </div>
 
           {step.why_important && (
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
               <p className="text-sm font-bold text-primary mb-1">💡 Why This Matters</p>
               <div className="text-sm text-foreground/80 prose prose-sm max-w-none">
-                <ReactMarkdown>{step.why_important}</ReactMarkdown>
+                <ReactMarkdown>{formatContent(step.why_important)}</ReactMarkdown>
               </div>
             </div>
           )}
@@ -270,7 +271,7 @@ const StepDetailPage = () => {
             <div className="bg-success/5 border border-success/20 rounded-xl p-4">
               <p className="text-sm font-bold text-success mb-1">✅ Expected Output</p>
               <div className="text-sm text-foreground/80 prose prose-sm max-w-none">
-                <ReactMarkdown>{step.expected_output}</ReactMarkdown>
+                <ReactMarkdown>{formatContent(step.expected_output)}</ReactMarkdown>
               </div>
             </div>
           )}
