@@ -11,6 +11,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import componentLed from "@/assets/component-led.png";
+import componentTransistor from "@/assets/component-transistor.png";
+import componentDiode from "@/assets/component-diode.png";
+import componentResistor from "@/assets/component-resistor.png";
+import componentCapacitor from "@/assets/component-capacitor.png";
+import componentPotentiometer from "@/assets/component-potentiometer.png";
+import componentArduino from "@/assets/component-arduino.png";
+import componentEsp32 from "@/assets/component-esp32.png";
+import componentRaspberryPi from "@/assets/component-raspberry-pi.png";
+import componentDht11 from "@/assets/component-dht11.png";
+import componentSoilSensor from "@/assets/component-soil-sensor.png";
+import componentServo from "@/assets/component-servo.png";
+import componentBuzzer from "@/assets/component-buzzer.png";
+import componentBluetooth from "@/assets/component-bluetooth.png";
 interface ComponentItem {
   name: string;
   category: string;
