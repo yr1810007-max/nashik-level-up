@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft, Play, RotateCcw, ChevronRight, Cpu, Zap, CircleDot,
   Monitor, Code, Lightbulb, BookOpen, MousePointer, Move, Plus,
-  Clock, Star
+  Clock, Star, Video, ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -284,6 +284,21 @@ function getWorkspaceData(title: string): WorkspaceData {
   return workspaceDataMap["crop"];
 }
 
+/* ── Video URLs per course keyword ── */
+const courseVideoMap: Record<string, { url: string; title: string; description: string }> = {
+  led: {
+    url: "https://www.youtube.com/embed/wIViXNYvjNk",
+    title: "LED Blinking Tutorial",
+    description: "Watch this step-by-step tutorial to understand how to blink an LED using ESP32. Follow along with the simulation on the right panel.",
+  },
+};
+
+function getCourseVideo(title: string) {
+  const t = title.toLowerCase();
+  if (t.includes("led")) return courseVideoMap["led"];
+  return null;
+}
+
 const iconMap: Record<string, any> = { cpu: Cpu, circle: CircleDot, zap: Zap, monitor: Monitor };
 
 const LearningWorkspace = () => {
@@ -389,6 +404,7 @@ const LearningWorkspace = () => {
                 <TabsTrigger value="steps" className="gap-1.5 text-xs"><ChevronRight className="h-3 w-3" /> Steps</TabsTrigger>
                 <TabsTrigger value="hints" className="gap-1.5 text-xs"><Lightbulb className="h-3 w-3" /> Hints</TabsTrigger>
                 <TabsTrigger value="learn" className="gap-1.5 text-xs"><BookOpen className="h-3 w-3" /> Learn</TabsTrigger>
+                <TabsTrigger value="video" className="gap-1.5 text-xs"><Video className="h-3 w-3" /> Video</TabsTrigger>
               </TabsList>
 
               {/* Steps Tab */}
@@ -468,6 +484,51 @@ const LearningWorkspace = () => {
                     <p className="text-xs text-foreground/70 leading-relaxed">{item.body}</p>
                   </div>
                 ))}
+              </TabsContent>
+
+              {/* Video Tab */}
+              <TabsContent value="video" className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[500px]">
+                {(() => {
+                  const video = courseTitle ? getCourseVideo(courseTitle) : null;
+                  if (video) {
+                    return (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Video className="h-4 w-4 text-primary" />
+                          <h3 className="text-sm font-bold text-foreground">Watch Tutorial</h3>
+                        </div>
+                        <div className="rounded-xl overflow-hidden border border-border">
+                          <iframe
+                            width="100%"
+                            height="300"
+                            src={video.url}
+                            title={video.title}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="w-full aspect-video"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{video.description}</p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5 text-xs"
+                          onClick={() => window.open(video.url.replace("/embed/", "/watch?v="), "_blank", "noopener,noreferrer")}
+                        >
+                          Open in YouTube <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="flex flex-col items-center justify-center py-12 text-center space-y-3">
+                      <Video className="h-10 w-10 text-muted-foreground/40" />
+                      <p className="text-sm font-semibold text-muted-foreground">Video coming soon</p>
+                      <p className="text-xs text-muted-foreground/70">We're preparing a tutorial video for this course. Check back later!</p>
+                    </div>
+                  );
+                })()}
               </TabsContent>
             </Tabs>
           </div>
