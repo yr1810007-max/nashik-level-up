@@ -90,8 +90,11 @@ const ComponentsPage = () => {
         <div className="space-y-3">
           {components.map((comp) => (
             <div key={comp.id} className="bg-card rounded-2xl border border-border shadow-card p-5 space-y-3">
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex items-start gap-4 justify-between">
+                {getComponentImage(comp.name) && (
+                  <img src={getComponentImage(comp.name)!} alt={comp.name} loading="lazy" width={64} height={64} className="w-16 h-16 object-contain rounded-lg bg-muted/30 p-1 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-foreground">{comp.name}</h3>
                   {comp.purpose && <p className="text-sm text-muted-foreground mt-1">{comp.purpose}</p>}
                 </div>
