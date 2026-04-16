@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { AppLayout } from "@/components/AppLayout";
+import { formatContent } from "@/lib/format-content";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -123,7 +124,7 @@ const LessonPage = () => {
 
           {lesson.content && (
             <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed mb-6 prose-headings:text-foreground prose-strong:text-foreground prose-li:text-foreground/90">
-              <ReactMarkdown>{lesson.content}</ReactMarkdown>
+              <ReactMarkdown>{formatContent(lesson.content)}</ReactMarkdown>
             </div>
           )}
 
