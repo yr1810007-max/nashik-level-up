@@ -106,7 +106,29 @@ const CourseDetail = () => {
         {/* Quick Actions */}
         {enrolled && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Confidence Meter */}
+            {/* 1. Start Learning */}
+            <Link to={`/learning/${courseId}`}>
+              <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold border-primary/50 hover:bg-primary/5">
+                <GraduationCap className="h-5 w-5 text-primary" />
+                <div className="text-left">
+                  <p className="text-sm">Start Learning</p>
+                  <p className="text-xs text-muted-foreground font-normal">Interactive step-by-step lab</p>
+                </div>
+              </Button>
+            </Link>
+
+            {/* 2. Start Simulation */}
+            <Link to={`/courses/${courseId}/simulation`}>
+              <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold border-success/50 hover:bg-success/5">
+                <FlaskConical className="h-5 w-5 text-success" />
+                <div className="text-left">
+                  <p className="text-sm">Start Simulation</p>
+                  <p className="text-xs text-muted-foreground font-normal">Practice with virtual circuit</p>
+                </div>
+              </Button>
+            </Link>
+
+            {/* 3. Confidence Check */}
             {!confidenceScore?.score_before ? (
               <Link to={`/courses/${courseId}/confidence/before`}>
                 <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold">
@@ -139,7 +161,7 @@ const CourseDetail = () => {
               </Link>
             ) : null}
 
-            {/* Components */}
+            {/* 4. Components & Parts */}
             {hasComponents && (
               <Link to={`/courses/${courseId}/components`}>
                 <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold">
@@ -151,28 +173,6 @@ const CourseDetail = () => {
                 </Button>
               </Link>
             )}
-
-            {/* Simulation */}
-            <Link to={`/courses/${courseId}/simulation`}>
-              <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold border-success/50 hover:bg-success/5">
-                <FlaskConical className="h-5 w-5 text-success" />
-                <div className="text-left">
-                  <p className="text-sm">Start Simulation</p>
-                  <p className="text-xs text-muted-foreground font-normal">Practice with virtual circuit</p>
-                </div>
-              </Button>
-            </Link>
-
-            {/* Learning Workspace */}
-            <Link to={`/learning/${courseId}`}>
-              <Button variant="outline" className="w-full h-14 justify-start gap-3 font-semibold border-primary/50 hover:bg-primary/5">
-                <GraduationCap className="h-5 w-5 text-primary" />
-                <div className="text-left">
-                  <p className="text-sm">Start Learning</p>
-                  <p className="text-xs text-muted-foreground font-normal">Interactive step-by-step lab</p>
-                </div>
-              </Button>
-            </Link>
           </div>
         )}
 
