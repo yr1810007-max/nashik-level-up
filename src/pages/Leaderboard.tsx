@@ -7,6 +7,17 @@ import { cn } from "@/lib/utils";
 
 interface LeaderboardEntry { user_id: string; display_name: string | null; avatar_url: string | null; xp: number; level: number; }
 
+const levelBadges = [
+  { min: 1, name: "Pioneer", icon: "🌟" },
+  { min: 2, name: "Trailblazer", icon: "🔥" },
+  { min: 3, name: "Achiever", icon: "🏅" },
+  { min: 4, name: "Conqueror", icon: "👑" },
+];
+
+function getBadges(level: number) {
+  return levelBadges.filter(b => b.min <= level);
+}
+
 const Leaderboard = () => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +44,8 @@ const Leaderboard = () => {
           <div className="bg-card rounded-2xl border border-border shadow-card divide-y divide-border">
             {entries.map((entry, i) => {
               const isCurrentUser = entry.user_id === user?.id;
+              const computedLevel = Math.floor(entry.xp / 100) + 1;
+              const badges = getBadges(computedLevel);
               return (
                 <div key={entry.user_id} className={cn("flex items-center gap-4 px-5 py-4", isCurrentUser && "bg-primary/5", i < 3 && "bg-accent/5")}>
                   <span className={cn("w-8 text-center font-bold", i < 3 ? "text-lg" : "text-sm text-muted-foreground")}>{rankEmoji(i)}</span>
@@ -40,8 +53,15 @@ const Leaderboard = () => {
                     {entry.avatar_url ? <img src={entry.avatar_url} alt="" className="w-full h-full object-cover" /> : <span className="text-sm font-bold text-muted-foreground">{(entry.display_name || "?")[0].toUpperCase()}</span>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={cn("font-semibold text-sm truncate", isCurrentUser ? "text-primary" : "text-foreground")}>{entry.display_name || "Anonymous"}{isCurrentUser && <span className="text-xs ml-2 text-primary">(You)</span>}</p>
-                    <p className="text-xs text-muted-foreground">Level {entry.level}</p>
+                    <p className={cn("font-semibold text-sm truncate", isCurrentUser ? "text-primary" : "text-foreground")}>
+                      {entry.display_name || "Anonymous"}{isCurrentUser && <span className="text-xs ml-2 text-primary">(You)</span>}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Level {computedLevel}</span>
+                      {badges.length > 0 && (
+                        <span className="text-xs">{badges.map(b => b.icon).join("")}</span>
+                      )}
+                    </div>
                   </div>
                   <span className="font-bold text-sm text-xp">⚡ {entry.xp.toLocaleString()}</span>
                 </div>
