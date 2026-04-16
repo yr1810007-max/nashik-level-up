@@ -193,7 +193,7 @@ const components: ComponentItem[] = [
     explanation: "Gives you extra output pins! Control 8 LEDs using just 3 Arduino pins.",
     specs: ["Outputs: 8", "Voltage: 2-6V", "Speed: 100MHz", "Cascadable"],
     realWorldUse: "LED matrix displays, 7-segment displays, extending GPIO, light shows.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=200&fit=crop",
+    image: componentBluetooth,
   },
   {
     name: "555 Timer IC",
@@ -202,7 +202,7 @@ const components: ComponentItem[] = [
     explanation: "A classic chip that generates precise timing signals. The Swiss Army knife of electronics!",
     specs: ["Modes: Astable, Monostable, Bistable", "Voltage: 4.5-15V", "Frequency: up to 500kHz"],
     realWorldUse: "LED flashers, tone generators, PWM controllers, debounce circuits, pulse generators.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=200&fit=crop",
+    image: componentBluetooth,
   },
   {
     name: "Logic Gates (AND, OR, NOT)",
@@ -211,7 +211,7 @@ const components: ComponentItem[] = [
     explanation: "Basic building blocks of all digital circuits. They make decisions with 1s and 0s!",
     specs: ["Types: AND, OR, NOT, NAND, XOR", "Voltage: 3.3-5V", "ICs: 7408, 7432, 7404"],
     realWorldUse: "Combinational logic, alarm systems, digital locks, arithmetic circuits, state machines.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=200&fit=crop",
+    image: componentBluetooth,
   },
 ];
 
