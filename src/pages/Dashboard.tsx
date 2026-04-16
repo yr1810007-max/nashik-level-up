@@ -3,7 +3,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { Flame, Zap, BookOpen, Trophy, Target, ArrowRight, Loader2 } from "lucide-react";
+import { Zap, BookOpen, Trophy, Target, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CourseWithProgress {
@@ -86,23 +86,22 @@ const Dashboard = () => {
   const computedLevel = Math.floor(profile.xp / 100) + 1;
   const levelProgress = ((profile.xp % 100) / 100) * 100;
 
+  const levelAchievements = [
+    { min: 1, name: "Pioneer", icon: "🌟", desc: "Completed your first project" },
+    { min: 2, name: "Trailblazer", icon: "🔥", desc: "Completed 2 projects" },
+    { min: 3, name: "Achiever", icon: "🏅", desc: "Completed 3 projects" },
+    { min: 4, name: "Conqueror", icon: "👑", desc: "Completed all 4 projects" },
+  ].filter(b => b.min <= computedLevel);
+
   return (
     <AppLayout>
       <div className="space-y-8 pb-20 md:pb-0">
         {/* Welcome */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Welcome back, {profile.display_name || "Learner"}! 👋
-            </h1>
-            <p className="text-muted-foreground mt-1">Ready to level up today?</p>
-          </div>
-          {profile.streak > 0 && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent/15 text-accent-foreground font-bold text-sm">
-              <Flame className="h-5 w-5 animate-streak-fire text-accent" />
-              {profile.streak} day streak!
-            </div>
-          )}
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            Welcome back, {profile.display_name || "Learner"}! 👋
+          </h1>
+          <p className="text-muted-foreground mt-1">Ready to level up today?</p>
         </div>
 
         {/* Stats Grid */}
@@ -123,10 +122,11 @@ const Dashboard = () => {
               </div>
               <span className="text-xs font-semibold text-muted-foreground">Level</span>
             </div>
-            <p className="text-2xl font-bold text-foreground">{computedLevel}</p>
+            <p className="text-2xl font-bold text-foreground">Level {computedLevel}</p>
             <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
               <div className="h-full gradient-primary rounded-full transition-all" style={{ width: `${levelProgress}%` }} />
             </div>
+            <p className="text-[10px] text-muted-foreground mt-1">{profile.xp % 100}/100 XP to next</p>
           </div>
           <div className="bg-card rounded-2xl p-5 border border-border shadow-card">
             <div className="flex items-center gap-3 mb-3">
@@ -144,7 +144,7 @@ const Dashboard = () => {
               </div>
               <span className="text-xs font-semibold text-muted-foreground">Achievements</span>
             </div>
-            <p className="text-2xl font-bold text-foreground">{achievements.length}</p>
+            <p className="text-2xl font-bold text-foreground">{achievements.length + levelAchievements.length}</p>
           </div>
         </div>
 
@@ -212,8 +212,8 @@ const Dashboard = () => {
 
           {/* Achievements */}
           <div className="bg-card rounded-2xl p-6 border border-border shadow-card">
-            <h2 className="text-lg font-bold text-foreground mb-5">Recent Achievements</h2>
-            {achievements.length === 0 ? (
+            <h2 className="text-lg font-bold text-foreground mb-5">🏆 Achievements</h2>
+            {levelAchievements.length === 0 && achievements.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Trophy className="h-12 w-12 mx-auto mb-3 opacity-30" />
                 <p className="font-medium">No achievements yet</p>
@@ -221,6 +221,15 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="space-y-3">
+                {levelAchievements.map((a) => (
+                  <div key={a.name} className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
+                    <span className="text-2xl">{a.icon}</span>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm text-foreground">{a.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{a.desc}</p>
+                    </div>
+                  </div>
+                ))}
                 {achievements.map((a) => (
                   <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
                     <span className="text-2xl">{a.icon}</span>
