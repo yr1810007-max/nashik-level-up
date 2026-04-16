@@ -32,7 +32,22 @@ const Profile = () => {
 
   if (!profile) return <AppLayout><div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></AppLayout>;
 
-  const levelProgress = ((profile.xp % 1000) / 1000) * 100;
+  // XP → Level: every 100 XP = 1 level
+  const computedLevel = Math.floor(profile.xp / 100) + 1;
+  const levelProgress = ((profile.xp % 100) / 100) * 100;
+
+  // Achievements based on completed courses
+  const getProjectAchievements = () => {
+    const badges = [
+      { min: 1, name: "Pioneer", icon: "🌟", desc: "Completed your first project" },
+      { min: 2, name: "Trailblazer", icon: "🔥", desc: "Completed 2 projects" },
+      { min: 3, name: "Achiever", icon: "🏅", desc: "Completed 3 projects" },
+      { min: 4, name: "Conqueror", icon: "👑", desc: "Completed all 4 projects" },
+    ];
+    return badges.filter(b => b.min <= computedLevel); // Show badges unlocked by level as proxy
+  };
+
+  const earnedBadges = getProjectAchievements();
 
   return (
     <AppLayout>
@@ -93,7 +108,7 @@ const Profile = () => {
           </div>
           <div className="bg-card rounded-xl p-4 border border-border text-center">
             <Trophy className="h-5 w-5 text-accent mx-auto mb-1" />
-            <p className="text-xl font-bold text-foreground">{profile.level}</p>
+            <p className="text-xl font-bold text-foreground">{computedLevel}</p>
             <p className="text-xs text-muted-foreground">Level</p>
           </div>
           <div className="bg-card rounded-xl p-4 border border-border text-center">
@@ -111,13 +126,29 @@ const Profile = () => {
         {/* Level Progress */}
         <div className="bg-card rounded-2xl border border-border shadow-card p-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-bold text-foreground">Level {profile.level} Progress</h2>
-            <span className="text-sm text-muted-foreground">{profile.xp % 1000} / 1000 XP</span>
+            <h2 className="font-bold text-foreground">Level {computedLevel} Progress</h2>
+            <span className="text-sm text-muted-foreground">{profile.xp % 100} / 100 XP</span>
           </div>
           <div className="h-3 bg-muted rounded-full overflow-hidden">
             <div className="h-full gradient-xp rounded-full transition-all" style={{ width: `${levelProgress}%` }} />
           </div>
         </div>
+
+        {/* Achievements / Badges */}
+        {earnedBadges.length > 0 && (
+          <div className="bg-card rounded-2xl border border-border shadow-card p-6">
+            <h2 className="font-bold text-foreground mb-4">🏆 Achievements</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {earnedBadges.map((badge) => (
+                <div key={badge.name} className="text-center p-3 rounded-xl bg-muted/30 border border-border/50">
+                  <span className="text-3xl">{badge.icon}</span>
+                  <p className="font-semibold text-sm text-foreground mt-1">{badge.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{badge.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </AppLayout>
   );

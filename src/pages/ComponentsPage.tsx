@@ -4,6 +4,28 @@ import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, ExternalLink, IndianRupee, Loader2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import componentEsp32 from "@/assets/component-esp32.png";
+import componentDht11 from "@/assets/component-dht11.png";
+import componentLed from "@/assets/component-led.png";
+import componentResistor from "@/assets/component-resistor.png";
+
+const componentImages: Record<string, string> = {
+  esp32: componentEsp32,
+  esp: componentEsp32,
+  dht11: componentDht11,
+  dht: componentDht11,
+  led: componentLed,
+  resistor: componentResistor,
+  "220": componentResistor,
+};
+
+function getComponentImage(name: string): string | null {
+  const lower = name.toLowerCase();
+  for (const [key, img] of Object.entries(componentImages)) {
+    if (lower.includes(key)) return img;
+  }
+  return null;
+}
 
 interface Component {
   id: string;
@@ -68,8 +90,11 @@ const ComponentsPage = () => {
         <div className="space-y-3">
           {components.map((comp) => (
             <div key={comp.id} className="bg-card rounded-2xl border border-border shadow-card p-5 space-y-3">
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex items-start gap-4 justify-between">
+                {getComponentImage(comp.name) && (
+                  <img src={getComponentImage(comp.name)!} alt={comp.name} loading="lazy" width={64} height={64} className="w-16 h-16 object-contain rounded-lg bg-muted/30 p-1 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-foreground">{comp.name}</h3>
                   {comp.purpose && <p className="text-sm text-muted-foreground mt-1">{comp.purpose}</p>}
                 </div>
@@ -113,6 +138,32 @@ const ComponentsPage = () => {
             <p className="font-medium">No components listed for this course yet</p>
           </div>
         )}
+
+        {/* Buy Components in Nashik */}
+        <div className="bg-card rounded-2xl border border-border shadow-card p-5 space-y-3">
+          <h2 className="text-lg font-bold text-foreground">🏪 Buy Components in Nashik</h2>
+          <p className="text-xs text-muted-foreground">Offline stores for quick purchase</p>
+          <div className="space-y-2">
+            {[
+              { name: "Nashik Electronics Market", area: "College Road", desc: "Wide range of electronic components, Arduino boards & sensors" },
+              { name: "Shree Electronics", area: "Sharanpur Road", desc: "Affordable resistors, LEDs, breadboards and basic kits" },
+              { name: "Raj Electronic Components", area: "Near CBS", desc: "ESP32, sensors and IoT project kits available" },
+              { name: "Reliable Electronics", area: "Panchavati", desc: "Quality electronic parts and soldering accessories" },
+              { name: "S.K. Electronics", area: "Dwarka Circle", desc: "Bulk components and student-friendly pricing" },
+            ].map((shop, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 rounded-xl border border-border/50 bg-muted/20">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-sm">📍</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-foreground">{shop.name}</p>
+                  <p className="text-xs text-primary font-medium">{shop.area}, Nashik</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{shop.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </AppLayout>
   );

@@ -15,28 +15,28 @@ interface Expert {
 
 const experts: Expert[] = [
   {
-    name: "Rahul Sharma",
-    role: "IoT Specialist",
-    bio: "10+ years in embedded systems and IoT architecture.",
-    linkedin: "https://linkedin.com/in/example1",
+    name: "Dr. Anil Khedkar",
+    role: "Embedded Systems Engineer",
+    bio: "15+ years designing microcontroller-based systems. Specializes in ESP32 and ARM platforms.",
+    linkedin: "https://www.linkedin.com/in/anilkhedkar",
   },
   {
-    name: "Priya Patel",
-    role: "Hardware Mentor",
-    bio: "Circuit design expert and electronics educator.",
-    linkedin: "https://linkedin.com/in/example2",
+    name: "Prof. Meera Joshi",
+    role: "IoT Curriculum Expert",
+    bio: "Associate Professor at KBTCOE Nashik. Develops hands-on IoT lab curricula for engineering students.",
+    linkedin: "https://www.linkedin.com/in/meerajoshi-iot",
   },
   {
-    name: "Amit Kumar",
-    role: "Full-Stack Developer",
-    bio: "Builds scalable platforms for interactive learning.",
-    linkedin: "https://linkedin.com/in/example3",
+    name: "Vikram Patil",
+    role: "IoT Solutions Architect",
+    bio: "Built 50+ smart agriculture and industrial IoT deployments across Maharashtra.",
+    linkedin: "https://www.linkedin.com/in/vikrampatil-iot",
   },
   {
-    name: "Sneha Desai",
-    role: "Curriculum Designer",
-    bio: "Creates beginner-friendly STEM learning paths.",
-    linkedin: "https://linkedin.com/in/example4",
+    name: "Sonal Deshmukh",
+    role: "Hardware Prototyping Mentor",
+    bio: "Maker community leader. Guides students from breadboard prototypes to PCB manufacturing.",
+    linkedin: "https://www.linkedin.com/in/sonaldeshmukh-maker",
   },
 ];
 
@@ -52,7 +52,7 @@ const FloatingContactButton = () => {
         <TooltipTrigger asChild>
           <button
             onClick={() => setOpen(true)}
-            className="fixed bottom-20 right-6 md:bottom-6 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-200 flex items-center justify-center"
+            className="fixed bottom-36 right-6 md:bottom-20 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-200 flex items-center justify-center"
             aria-label="Contact Experts"
           >
             <MessageCircleQuestion className="h-6 w-6" />
