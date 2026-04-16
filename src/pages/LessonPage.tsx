@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -121,8 +122,8 @@ const LessonPage = () => {
           <h1 className="text-2xl font-bold text-foreground mb-4">{lesson.title}</h1>
 
           {lesson.content && (
-            <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed mb-6">
-              <div dangerouslySetInnerHTML={{ __html: lesson.content.replace(/\n/g, "<br/>") }} />
+            <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed mb-6 prose-headings:text-foreground prose-strong:text-foreground prose-li:text-foreground/90">
+              <ReactMarkdown>{lesson.content}</ReactMarkdown>
             </div>
           )}
 

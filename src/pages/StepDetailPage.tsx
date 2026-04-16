@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -252,36 +253,25 @@ const StepDetailPage = () => {
 
           <h1 className="text-2xl font-bold text-foreground">{step.title}</h1>
 
-          <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed space-y-3">
-            {step.description.split('\n').map((para, i) => {
-              const trimmed = para.trim();
-              if (!trimmed) return null;
-              if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
-                return (
-                  <div key={i} className="flex items-start gap-2 text-sm">
-                    <span className="text-primary mt-0.5 font-bold">•</span>
-                    <span>{trimmed.replace(/^[-•]\s*/, '')}</span>
-                  </div>
-                );
-              }
-              if (trimmed.endsWith(':')) {
-                return <h3 key={i} className="text-sm font-bold text-foreground mt-2">{trimmed}</h3>;
-              }
-              return <p key={i} className="text-sm">{trimmed}</p>;
-            })}
+          <div className="prose prose-sm max-w-none text-foreground/90 leading-relaxed space-y-3 prose-headings:text-foreground prose-strong:text-foreground prose-li:text-foreground/90">
+            <ReactMarkdown>{step.description}</ReactMarkdown>
           </div>
 
           {step.why_important && (
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
               <p className="text-sm font-bold text-primary mb-1">💡 Why This Matters</p>
-              <p className="text-sm text-foreground/80">{step.why_important}</p>
+              <div className="text-sm text-foreground/80 prose prose-sm max-w-none">
+                <ReactMarkdown>{step.why_important}</ReactMarkdown>
+              </div>
             </div>
           )}
 
           {step.expected_output && (
             <div className="bg-success/5 border border-success/20 rounded-xl p-4">
               <p className="text-sm font-bold text-success mb-1">✅ Expected Output</p>
-              <p className="text-sm text-foreground/80">{step.expected_output}</p>
+              <div className="text-sm text-foreground/80 prose prose-sm max-w-none">
+                <ReactMarkdown>{step.expected_output}</ReactMarkdown>
+              </div>
             </div>
           )}
 
