@@ -53,7 +53,7 @@ const components: ComponentItem[] = [
     explanation: "A tiny light that glows when electricity flows through it. Like a mini bulb but way more efficient!",
     specs: ["Forward Voltage: 1.8-3.3V", "Current: 20mA typical", "Colors: Red, Green, Blue, White"],
     realWorldUse: "Traffic lights, phone screens, TV backlights, indicator lights on every gadget you own.",
-    image: "https://images.unsplash.com/photo-1616400619175-5beda3a17896?w=300&h=200&fit=crop",
+    image: componentLed,
   },
   {
     name: "Transistor (NPN/PNP)",
@@ -62,7 +62,7 @@ const components: ComponentItem[] = [
     explanation: "A tiny electronic switch that can also amplify signals. Think of it as a gate that controls current flow.",
     specs: ["Types: NPN (BC547), PNP (BC557)", "Max Current: ~100mA", "Gain: 100-800 hFE"],
     realWorldUse: "Every computer chip has billions of these. Used in amplifiers, switches, and digital logic.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=200&fit=crop",
+    image: componentTransistor,
   },
   {
     name: "Diode (1N4007)",
@@ -71,7 +71,7 @@ const components: ComponentItem[] = [
     explanation: "A one-way valve for electricity. Current flows in only one direction — great for protection!",
     specs: ["Max Voltage: 1000V", "Max Current: 1A", "Forward Drop: 0.7V"],
     realWorldUse: "Power supplies, battery chargers, voltage protection in circuits.",
-    image: "https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=300&h=200&fit=crop",
+    image: componentDiode,
   },
   // Passive Components
   {
@@ -81,7 +81,7 @@ const components: ComponentItem[] = [
     explanation: "Controls how much current flows through a circuit — like a speed bump for electricity.",
     specs: ["Range: 1Ω - 10MΩ", "Power: 0.25W typical", "Tolerance: ±5%"],
     realWorldUse: "LED current limiting, voltage dividers, pull-up/pull-down in microcontroller circuits.",
-    image: "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=300&h=200&fit=crop",
+    image: componentResistor,
   },
   {
     name: "Capacitor",
@@ -90,7 +90,7 @@ const components: ComponentItem[] = [
     explanation: "Stores small amounts of energy and releases it quickly. Like a tiny rechargeable battery for smoothing power.",
     specs: ["Types: Ceramic, Electrolytic", "Range: 1pF - 10000µF", "Voltage: 5V - 50V"],
     realWorldUse: "Power supply filtering, timing circuits, touch sensors, camera flashes.",
-    image: "https://images.unsplash.com/photo-1597852074816-d933c7d2b988?w=300&h=200&fit=crop",
+    image: componentCapacitor,
   },
   {
     name: "Potentiometer",
@@ -99,7 +99,7 @@ const components: ComponentItem[] = [
     explanation: "A resistor with a knob! Turn it to change resistance — perfect for volume controls.",
     specs: ["Range: 1KΩ - 1MΩ", "Rotation: 270°", "Type: Linear/Logarithmic"],
     realWorldUse: "Volume knobs, brightness controls, joystick inputs, tuning circuits.",
-    image: "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=300&h=200&fit=crop",
+    image: componentPotentiometer,
   },
   // Computing & Control Units
   {
@@ -109,7 +109,7 @@ const components: ComponentItem[] = [
     explanation: "A beginner-friendly brain for your projects. Write code, upload it, and it controls LEDs, motors, sensors!",
     specs: ["Chip: ATmega328P", "Digital Pins: 14", "Analog Pins: 6", "Clock: 16MHz"],
     realWorldUse: "Robotics, home automation, weather stations, art installations, prototyping.",
-    image: "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=300&h=200&fit=crop",
+    image: componentArduino,
   },
   {
     name: "ESP32",
@@ -118,7 +118,7 @@ const components: ComponentItem[] = [
     explanation: "Arduino's cooler cousin with built-in WiFi and Bluetooth. Perfect for IoT projects!",
     specs: ["Dual-core 240MHz", "WiFi + Bluetooth", "34 GPIO pins", "512KB RAM"],
     realWorldUse: "Smart home devices, IoT sensors, web servers, Bluetooth gadgets, remote monitoring.",
-    image: "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=300&h=200&fit=crop",
+    image: componentEsp32,
   },
   {
     name: "Raspberry Pi",
@@ -127,7 +127,7 @@ const components: ComponentItem[] = [
     explanation: "A full mini-computer the size of a credit card! Runs Linux, Python, and more.",
     specs: ["ARM CPU up to 1.8GHz", "Up to 8GB RAM", "HDMI, USB, GPIO", "MicroSD storage"],
     realWorldUse: "Media centers, retro gaming, AI projects, network servers, robotics.",
-    image: "https://images.unsplash.com/photo-1629292400373-4e6e1c926dea?w=300&h=200&fit=crop",
+    image: componentRaspberryPi,
   },
   // Electrochemical & Output Devices
   {
@@ -137,7 +137,7 @@ const components: ComponentItem[] = [
     explanation: "Measures temperature and humidity in one small package. Your personal weather station sensor!",
     specs: ["Temp Range: 0-50°C", "Humidity: 20-90%", "Accuracy: ±2°C", "Digital output"],
     realWorldUse: "Weather stations, greenhouse monitoring, HVAC systems, smart home climate control.",
-    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=300&h=200&fit=crop",
+    image: componentDht11,
   },
   {
     name: "Soil Moisture Sensor",
@@ -146,7 +146,7 @@ const components: ComponentItem[] = [
     explanation: "Detects how wet or dry the soil is. Perfect for auto-watering your plants!",
     specs: ["Output: Analog/Digital", "Voltage: 3.3-5V", "Probe: Corrosion-resistant"],
     realWorldUse: "Smart irrigation, garden automation, agricultural monitoring, plant care systems.",
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=300&h=200&fit=crop",
+    image: componentSoilSensor,
   },
   {
     name: "Servo Motor",
@@ -155,7 +155,7 @@ const components: ComponentItem[] = [
     explanation: "A motor that rotates to a precise angle. Perfect for robot arms and door locks!",
     specs: ["Rotation: 0-180°", "Torque: 1.5-2 kg/cm", "Voltage: 5V", "PWM control"],
     realWorldUse: "Robotic arms, RC vehicles, door locks, camera pan/tilt, animatronics.",
-    image: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=300&h=200&fit=crop",
+    image: componentServo,
   },
   {
     name: "Buzzer",
@@ -164,7 +164,7 @@ const components: ComponentItem[] = [
     explanation: "Makes beeping sounds when powered. Use it for alarms, notifications, or playing simple melodies!",
     specs: ["Types: Active/Passive", "Voltage: 3-5V", "Frequency: 2-4 kHz", "Output: 85dB"],
     realWorldUse: "Alarm systems, timer buzzers, doorbells, game sound effects, notification alerts.",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=200&fit=crop",
+    image: componentBuzzer,
   },
   // Communication & Connectivity
   {
@@ -174,7 +174,7 @@ const components: ComponentItem[] = [
     explanation: "Adds Bluetooth to your project! Control things from your phone wirelessly.",
     specs: ["Bluetooth 2.0", "Range: ~10m", "Baud: 9600-115200", "Master/Slave mode"],
     realWorldUse: "Phone-controlled robots, wireless data logging, Bluetooth speakers, smart locks.",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=200&fit=crop",
+    image: componentBluetooth,
   },
   {
     name: "nRF24L01 Radio Module",
@@ -183,7 +183,7 @@ const components: ComponentItem[] = [
     explanation: "Lets two Arduinos talk to each other wirelessly over radio waves. Like walkie-talkies for circuits!",
     specs: ["Frequency: 2.4GHz", "Range: 100m+", "Data Rate: 250kbps-2Mbps", "Low power"],
     realWorldUse: "Wireless sensor networks, drone control, remote controls, mesh networks.",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=200&fit=crop",
+    image: componentBluetooth,
   },
   // Specialized Processing Logic
   {
